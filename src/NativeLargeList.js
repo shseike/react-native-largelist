@@ -67,11 +67,9 @@ export class NativeLargeList extends React.PureComponent<LargeListPropType> {
       lastOffset.push(sumHeight);
       groupIndexes.push([]);
     }
+    const portrateHeight = Math.max(Dimensions.get("window").height, Dimensions.get("window").width);
+    const wrapperHeight = Math.min(portrateHeight, 1400);
 
-    const wrapperHeight = idx(
-      () => this._scrollView.current._wrapperLayout.height,
-      700
-    );
     for (let section = 0; section < data.length; ++section) {
       for (let row = -1; row < data[section].items.length; ++row) {
         let height;
@@ -193,13 +191,14 @@ export class NativeLargeList extends React.PureComponent<LargeListPropType> {
     if (this._headerLayout) this.forceUpdate();
   };
 
-  _onScrollEnd = () => {
+  _onScrollEnd = (e) => {
     this._groupRefs.forEach(group =>
       idx(() => group.current.contentConversion(this._contentOffsetY))
     );
     idx(() =>
       this._sectionContainer.current.updateOffset(this._contentOffsetY)
     );
+    this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);
   };
 
   _onScroll = e => {
@@ -266,6 +265,7 @@ export class NativeLargeList extends React.PureComponent<LargeListPropType> {
         ht += heightForIndexPath({ section: s, row: r });
       }
     }
+
     return this.scrollTo({ x: 0, y: ht }, animated);
   }
 }
